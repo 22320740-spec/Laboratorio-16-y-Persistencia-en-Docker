@@ -1,7 +1,7 @@
 # Laboratorio-16-y-Persistencia-en-Docker
 Evidencia práctica de Networking Lógico y manejo de datos en Docker. Demuestra la capacidad para aislar entornos con Redes Definidas por Software (SDN), comunicar microservicios mediante DNS interno y garantizar la integridad de la información usando volúmenes en bases de datos (MariaDB).
-## 1. Topología del Laboratorio
-A continuación, se presenta el diagrama de la arquitectura lógica implementada, donde los contenedores se comunican a través de una Red Definida por Software (SDN): 
+1. Topología del Laboratorio
+Se presenta el diagrama de la arquitectura lógica implementada, donde los contenedores se comunican a través de una Red Definida por Software (SDN): 
 ```mermaid
 graph TD
     A[Contenedor: Alpine / Frontend] <-->|Conectado a| B((Red: red-negocio))
@@ -9,7 +9,7 @@ graph TD
 ```  
 
 2. Comandos Utilizados
-A continuación, se detallan los comandos ejecutados durante la práctica para cumplir con los objetivos de microsegmentación y persistencia de datos:
+Se detallan los comandos ejecutados durante la práctica para cumplir con los objetivos de microsegmentación y persistencia de datos:
 Fase 1: Redes y DNS Interno
   docker network create red-negocio
   docker run -d --name mi-db --network red-negocio -e MYSQL_ROOT_PASSWORD=secreto mariadb:latest
@@ -28,10 +28,15 @@ Fase 2: Volúmenes y Persistencia
   docker exec -it db-recuperado mariadb -u root -psecreto -e "SHOW DATABASES;"
   docker volume inspect mi-data-db
 
-3. Reflexiones
+3. Se muestra la captura de pantalla de la consola al ejecutar el comando docker volume inspect mi-data-db, donde se verifica la creación y la ruta física (Mountpoint) del volumen gestionado por Docker en el sistema:
+   <img width="1366" height="715" alt="Captura de pantalla (1571)" src="https://github.com/user-attachments/assets/c95af8cc-7aba-4cd6-b1dd-40abbed715d4" />
+
+
+5. Reflexiones
 Si borro la red red-negocio, ¿qué sucede con los contenedores que estaban conectados a ella?
 Docker no permite borrar una red que esté en uso activo. Arrojará un error indicando que la red tiene "endpoints" (contenedores) activos. Para poder eliminarla, primero es necesario detener y eliminar los contenedores asociados a dicha red.
 
 Reflexión sobre el uso de volúmenes en producción:
 En entornos de producción, los volúmenes son críticos porque permiten desacoplar el ciclo de vida de los datos del ciclo de vida del contenedor. Esto garantiza que la información vital (como bases de datos) persista de manera segura, evitando pérdidas catastróficas incluso si el contenedor original se actualiza, se reinicia o se destruye accidentalmente.
+
 
